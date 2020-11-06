@@ -37,6 +37,7 @@ module Pod
             ['--swift-version=VERSION', 'The `SWIFT_VERSION` that should be used when linting the spec. ' \
              'This takes precedence over the Swift versions specified by the spec or a `.swift-version` file'],
             ['--no-overwrite', 'Disallow pushing that would overwrite an existing spec'],
+            ['--update-sources', 'Make sure sources are up-to-date before a push'],
           ].concat(super)
         end
 
@@ -74,10 +75,10 @@ module Pod
         def run
           open_editor if @commit_message && @message.nil?
           check_if_push_allowed
+          update_sources if @update_sources
           validate_podspec_files
           check_repo_status
           update_repo
-          update_sources if @update_sources
           add_specs_to_repo
           push_repo unless @local_only
         end
@@ -184,7 +185,7 @@ module Pod
           @source_urls.each do |source_url|
             source = config.sources_manager.source_with_name_or_url(source_url)
             dir = source.specs_dir
-            UI.puts "[INFO] Git pull at #{dir} for #{source}"
+            UI.puts "Updating source at #{dir} for #{source}"
             git!(%W(-C #{dir} pull))
           end
         end
