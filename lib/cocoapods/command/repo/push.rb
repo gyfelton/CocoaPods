@@ -184,6 +184,7 @@ module Pod
           @source_urls.each do |source_url|
             source = config.sources_manager.source_with_name_or_url(source_url)
             dir = source.specs_dir
+            UI.puts "[INFO] Git pull at #{dir} for #{source}"
             git!(%W(-C #{dir} pull))
           end
         end
